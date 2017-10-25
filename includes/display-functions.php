@@ -9,7 +9,36 @@
  */
 
 /**
+ * Filter the content based on the "restrict this content" configuration
+ *
+ * @param string $content Unfiltered content.
+ *
+ * @since 2.1.4
+ * @return string Newly modified post content.
+ */
+function rc_filter_restricted_content( $content ) {
+
+	global $rc_options;
+
+	if ( ! rc_user_can_access() ) {
+
+		// The current user doesn't have access so we need to filter the content.
+		$required_level     = get_post_meta( get_the_ID(), 'rcUserLevel', true );
+		$restricted_message = isset( $rc_options[ strtolower( $required_level ) . '_message' ] ) ? $rc_options[ strtolower( $required_level ) . '_message' ] : $rc_options['subscriber_message'];
+		$content            = do_shortcode( $restricted_message );
+
+	}
+
+	return $content;
+
+}
+
+add_filter( 'the_content', 'rc_filter_restricted_content' );
+
+/**
  * Display editor message
+ *
+ * @deprecated 2.1.4 Handled by rc_user_can_access() and rc_filter_restricted_content() instead.
  *
  * @param string $content
  *
@@ -30,6 +59,8 @@ function rcMetaDisplayEditor( $content ) {
 
 /**
  * Display author message
+ *
+ * @deprecated 2.1.4 Handled by rc_user_can_access() and rc_filter_restricted_content() instead.
  *
  * @param string $content
  *
@@ -52,6 +83,8 @@ function rcMetaDisplayAuthor( $content ) {
 /**
  * Display contributor message
  *
+ * @deprecated 2.1.4 Handled by rc_user_can_access() and rc_filter_restricted_content() instead.
+ *
  * @param string $content
  *
  * @return string
@@ -73,6 +106,8 @@ function rcMetaDisplayContributor( $content ) {
 /**
  * Display subscriber message
  *
+ * @deprecated 2.1.4 Handled by rc_user_can_access() and rc_filter_restricted_content() instead.
+ *
  * @param string $content
  *
  * @return string
@@ -93,6 +128,8 @@ function rcMetaDisplaySubscriber( $content ) {
 
 /**
  * Display error message to non-logged in users
+ *
+ * @deprecated 2.1.4 Handled by rc_user_can_access() and rc_filter_restricted_content() instead.
  *
  * @param $content
  *
