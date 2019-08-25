@@ -144,15 +144,20 @@ function rc_process_login_form() {
 
 		$redirect = ! empty( $_POST['rc_redirect'] ) ? $_POST['rc_redirect'] : home_url();
 
-		wp_signon( array(
+		$wp_signon_result = wp_signon( array(
 			'user_login'    => $user->user_login,
 			'user_password' => $_POST['rc_user_pass'],
 			'remember'      => isset( $_POST['rc_user_remember'] )
 		) );
 
-		wp_safe_redirect( esc_url_raw( $redirect ) );
+		if( is_wp_error($wp_signon_result) ){
+			rc_errors()->add( 'wp_signin_error' , $wp_signon_result->get_error_message(), 'login' );
+			$errors = rc_errors()->get_error_messages();
+		}else{
+			wp_safe_redirect( esc_url_raw( $redirect ) );
 
-		exit;
+			exit;	
+		}
 	}
 }
 add_action( 'init', 'rc_process_login_form' );
